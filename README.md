@@ -1,5 +1,9 @@
 # DocGemma
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/galinilin/docgemma-app/blob/main/docgemma_colab.ipynb)
+
+Run the full stack on a free Colab A100 GPU — just provide a HuggingFace token. The notebook deploys vLLM + DocGemma and generates a public URL.
+
 > **Source repositories:** [docgemma-connect](https://github.com/galinilin/docgemma-connect) (FastAPI backend) | [docgemma-frontend](https://github.com/galinilin/docgemma-frontend) (Vue 3 UI)
 >
 > **Competition:** [The MedGemma Impact Challenge](https://www.kaggle.com/competitions/med-gemma-impact-challenge) on Kaggle
