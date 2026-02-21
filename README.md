@@ -61,6 +61,25 @@ docker compose --profile gpu up
 
 > **Note:** The first run downloads ~54 GB of model weights. The vLLM health check allows up to 10 minutes for the model to load.
 
+### Option 3: Native (No Docker)
+
+For GPU cloud instances (RunPod, Vast.ai, Lambda, Paperspace, AWS/GCP/Azure) or bare metal with an NVIDIA GPU. Installs everything directly on the host — no containers needed.
+
+```bash
+git clone https://github.com/galinilin/docgemma-app.git
+HF_TOKEN=hf_your_token_here bash docgemma-app/run-native.sh
+```
+
+The script auto-detects GPU VRAM (falls back to MedGemma 4B if < 40 GB), installs dependencies (Node.js, UV, vLLM), builds the frontend, and starts vLLM + the app on a single port.
+
+| Variable | Default | Description |
+|---|---|---|
+| `HF_TOKEN` | — | HuggingFace token (required) |
+| `DOCGEMMA_MODEL` | `google/medgemma-27b-it` | Auto-selected based on VRAM |
+| `APP_PORT` | `8080` | Web UI port |
+| `VLLM_PORT` | `8000` | vLLM API port |
+| `WORKDIR` | `/workspace/docgemma` | Clone/build directory |
+
 ### Podman
 
 Both profiles work with Podman. For the `remote` profile, use the default compose file:
