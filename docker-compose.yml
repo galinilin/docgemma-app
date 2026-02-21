@@ -1,0 +1,67 @@
+services:
+  # ── vLLM: MedGemma inference server (GPU profile) ──────────────────
+  vllm:
+    image: vllm/vllm-openai:latest
+    profiles: ["gpu"]
+    command: >
+      --model ${DOCGEMMA_MODEL:-google/medgemma-27b-it}
+      --dtype bfloat16
+      --max-model-len ${VLLM_MAX_MODEL_LEN:-8192}
+      --gpu-memory-utilization ${VLLM_GPU_UTIL:-0.90}
+      --trust-remote-code
+      --host 0.0.0.0
+      --port 8000
+    environment:
+      - HF_TOKEN=${HF_TOKEN}
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
+    volumes:
+      - vllm-cache:/root/.cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/v1/models')"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 300s
+    restart: unless-stopped
+
+  # ── DocGemma app (remote profile — connects to external endpoint) ──
+  docgemma:
+    build: .
+    profiles: ["remote"]
+    ports:
+      - "${DOCGEMMA_PORT:-8080}:8000"
+    environment:
+      - DOCGEMMA_ENDPOINT=${DOCGEMMA_ENDPOINT}
+      - DOCGEMMA_API_KEY=${DOCGEMMA_API_KEY}
+      - DOCGEMMA_MODEL=${DOCGEMMA_MODEL:-google/medgemma-27b-it}
+    volumes:
+      - docgemma-data:/app/data
+    restart: unless-stopped
+
+  # ── DocGemma app (GPU profile — connects to local vLLM) ───────────
+  docgemma-gpu:
+    build: .
+    profiles: ["gpu"]
+    ports:
+      - "${DOCGEMMA_PORT:-8080}:8000"
+    environment:
+      - DOCGEMMA_ENDPOINT=http://vllm:8000
+      - DOCGEMMA_API_KEY=token
+      - DOCGEMMA_MODEL=${DOCGEMMA_MODEL:-google/medgemma-27b-it}
+    volumes:
+      - docgemma-data:/app/data
+    depends_on:
+      vllm:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  vllm-cache:
+  docgemma-data:
