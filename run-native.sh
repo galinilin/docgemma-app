@@ -152,11 +152,11 @@ GPU_COUNT=$(nvidia-smi --query-gpu=name --format=csv,noheader | wc -l)
 log "GPU: ${GPU_COUNT}x ${GPU_NAME} (${GPU_MEM}MB VRAM each)"
 
 if [ "$GPU_MEM" -lt 20000 ]; then
-    warn "Less than 20GB VRAM. Switching to medgemma-4b-it"
-    DOCGEMMA_MODEL="google/medgemma-4b-it"
+    warn "Less than 20GB VRAM. Switching to medgemma-1.5-4b-it"
+    DOCGEMMA_MODEL="google/medgemma-1.5-4b-it"
 elif [ "$GPU_MEM" -lt 40000 ]; then
-    warn "Less than 40GB VRAM. Switching to medgemma-4b-it (27B needs ~48GB)"
-    DOCGEMMA_MODEL="google/medgemma-4b-it"
+    warn "Less than 40GB VRAM. Switching to medgemma-1.5-4b-it (27B needs ~48GB)"
+    DOCGEMMA_MODEL="google/medgemma-1.5-4b-it"
 fi
 
 log "Model: $DOCGEMMA_MODEL"
@@ -252,7 +252,7 @@ trap cleanup SIGINT SIGTERM EXIT
 
 # --- Start vLLM ---
 step "Starting vLLM"
-echo -e "${YELLOW}First run downloads model weights (~54GB for 27B). This may take 10-20 minutes.${NC}"
+echo -e "${YELLOW}First run downloads model weights (~54GB for MedGemma 27B, ~8GB for MedGemma 1.5 4B). This may take a while.${NC}"
 
 VLLM_ARGS=(
     "$DOCGEMMA_MODEL"

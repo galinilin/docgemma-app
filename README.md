@@ -4,7 +4,7 @@
 >
 > **Competition:** [The MedGemma Impact Challenge](https://www.kaggle.com/competitions/med-gemma-impact-challenge) on Kaggle
 
-Agentic medical AI assistant powered by [MedGemma](https://huggingface.co/google/medgemma-27b-it), with autonomous tool calling for clinical decision support. Designed for resource-limited healthcare environments.
+Agentic medical AI assistant powered by MedGemma, with autonomous tool calling for clinical decision support. Designed for resource-limited healthcare environments. Compatible with [MedGemma 27B](https://huggingface.co/google/medgemma-27b-it) and [MedGemma 1.5 4B](https://huggingface.co/google/medgemma-1.5-4b-it).
 
 DocGemma combines a Vue 3 web interface with a FastAPI/LangGraph agent backend that can query drug safety databases, search medical literature, manage electronic health records, and analyze medical images — all with human-in-the-loop approval for safety-critical actions.
 
@@ -13,7 +13,7 @@ DocGemma combines a Vue 3 web interface with a FastAPI/LangGraph agent backend t
 - [Docker](https://docs.docker.com/get-docker/) and Docker Compose v2+, or [Podman](https://podman.io/) with `podman compose`
 
 **For local GPU inference (optional):**
-- NVIDIA GPU with 48 GB+ VRAM (e.g., A100, A6000)
+- NVIDIA GPU — 48 GB+ VRAM for MedGemma 27B (e.g., A100, A6000) or 8 GB+ for MedGemma 1.5 4B
 - [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
 - A [HuggingFace](https://huggingface.co) account with access to [MedGemma](https://huggingface.co/google/medgemma-27b-it)
 
@@ -22,7 +22,26 @@ DocGemma combines a Vue 3 web interface with a FastAPI/LangGraph agent backend t
 
 ## Quick Start
 
-### Option 1: Remote Endpoint (No GPU Required)
+### Option 1: Native (No Docker)
+
+For GPU cloud instances (RunPod, Vast.ai, Lambda, Paperspace, AWS/GCP/Azure) or bare metal with an NVIDIA GPU. Installs everything directly on the host — no containers needed.
+
+```bash
+git clone https://github.com/galinilin/docgemma-app.git
+HF_TOKEN=hf_your_token_here bash docgemma-app/run-native.sh
+```
+
+The script auto-detects GPU VRAM (falls back to MedGemma 4B if < 40 GB), installs dependencies (Node.js, UV, vLLM), builds the frontend, and starts vLLM + the app on a single port.
+
+| Variable | Default | Description |
+|---|---|---|
+| `HF_TOKEN` | — | HuggingFace token (required) |
+| `DOCGEMMA_MODEL` | `google/medgemma-27b-it` | Auto-selected based on VRAM |
+| `APP_PORT` | `8080` | Web UI port |
+| `VLLM_PORT` | `8000` | vLLM API port |
+| `WORKDIR` | `/workspace/docgemma` | Clone/build directory |
+
+### Option 2: Docker — Remote Endpoint (No GPU Required)
 
 ```bash
 git clone https://github.com/galinilin/docgemma-app.git
@@ -41,7 +60,7 @@ DOCGEMMA_API_KEY=your-api-key-here
 docker compose --profile remote up
 ```
 
-### Option 2: Local GPU with vLLM
+### Option 3: Docker — Local GPU with vLLM
 
 ```bash
 git clone https://github.com/galinilin/docgemma-app.git
@@ -59,26 +78,7 @@ HF_TOKEN=hf_your_token_here
 docker compose --profile gpu up
 ```
 
-> **Note:** The first run downloads ~54 GB of model weights. The vLLM health check allows up to 10 minutes for the model to load.
-
-### Option 3: Native (No Docker)
-
-For GPU cloud instances (RunPod, Vast.ai, Lambda, Paperspace, AWS/GCP/Azure) or bare metal with an NVIDIA GPU. Installs everything directly on the host — no containers needed.
-
-```bash
-git clone https://github.com/galinilin/docgemma-app.git
-HF_TOKEN=hf_your_token_here bash docgemma-app/run-native.sh
-```
-
-The script auto-detects GPU VRAM (falls back to MedGemma 4B if < 40 GB), installs dependencies (Node.js, UV, vLLM), builds the frontend, and starts vLLM + the app on a single port.
-
-| Variable | Default | Description |
-|---|---|---|
-| `HF_TOKEN` | — | HuggingFace token (required) |
-| `DOCGEMMA_MODEL` | `google/medgemma-27b-it` | Auto-selected based on VRAM |
-| `APP_PORT` | `8080` | Web UI port |
-| `VLLM_PORT` | `8000` | vLLM API port |
-| `WORKDIR` | `/workspace/docgemma` | Clone/build directory |
+> **Note:** The first run downloads model weights (~54 GB for MedGemma 27B, ~8 GB for MedGemma 1.5 4B). The vLLM health check allows up to 10 minutes for the model to load.
 
 ### Podman
 
@@ -119,7 +119,7 @@ The Docker image bundles everything into a single container:
 
 - **Frontend:** Vue 3 + TypeScript + Tailwind CSS, built and served as static files
 - **Backend:** Python/FastAPI with a 7-node LangGraph agent workflow
-- **Model:** MedGemma 27B via vLLM (OpenAI-compatible API)
+- **Model:** MedGemma 27B or 1.5 4B via vLLM (OpenAI-compatible API)
 
 ## Configuration
 
@@ -128,7 +128,7 @@ The Docker image bundles everything into a single container:
 | `DOCGEMMA_ENDPOINT` | remote profile | — | vLLM endpoint URL |
 | `DOCGEMMA_API_KEY` | remote profile | — | API key for the endpoint |
 | `HF_TOKEN` | gpu profile | — | HuggingFace token (with MedGemma access) |
-| `DOCGEMMA_MODEL` | no | `google/medgemma-27b-it` | Model ID (HuggingFace format) |
+| `DOCGEMMA_MODEL` | no | `google/medgemma-27b-it` | Model ID — also supports `google/medgemma-1.5-4b-it` |
 | `DOCGEMMA_PORT` | no | `8080` | Host port for the web UI |
 | `VLLM_MAX_MODEL_LEN` | no | `8192` | Maximum context length |
 | `VLLM_GPU_UTIL` | no | `0.90` | GPU memory utilization (0.0–1.0) |
@@ -172,7 +172,7 @@ For development, clone the source repositories directly:
 ## Troubleshooting
 
 **vLLM takes a long time to start**
-First run downloads ~54 GB of model weights. Subsequent runs use the cached weights in the `vllm-cache` Docker volume.
+First run downloads model weights (~54 GB for MedGemma 27B, ~8 GB for MedGemma 1.5 4B). Subsequent runs use the cached weights in the `vllm-cache` Docker volume.
 
 **GPU out of memory**
 Reduce `VLLM_GPU_UTIL` (e.g., `0.80`) or `VLLM_MAX_MODEL_LEN` (e.g., `4096`) in your `.env`.
