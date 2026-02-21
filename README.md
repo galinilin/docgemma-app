@@ -1,6 +1,8 @@
 # DocGemma
 
 > **Source repositories:** [docgemma-connect](https://github.com/galinilin/docgemma-connect) (FastAPI backend) | [docgemma-frontend](https://github.com/galinilin/docgemma-frontend) (Vue 3 UI)
+>
+> **Competition:** [The MedGemma Impact Challenge](https://www.kaggle.com/competitions/med-gemma-impact-challenge) on Kaggle
 
 Agentic medical AI assistant powered by [MedGemma](https://huggingface.co/google/medgemma-27b-it), with autonomous tool calling for clinical decision support. Designed for resource-limited healthcare environments.
 
