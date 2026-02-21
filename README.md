@@ -8,7 +8,7 @@ DocGemma combines a Vue 3 web interface with a FastAPI/LangGraph agent backend t
 
 ## Prerequisites
 
-- [Docker](https://docs.docker.com/get-docker/) and Docker Compose v2+
+- [Docker](https://docs.docker.com/get-docker/) and Docker Compose v2+, or [Podman](https://podman.io/) with `podman compose`
 
 **For local GPU inference (optional):**
 - NVIDIA GPU with 48 GB+ VRAM (e.g., A100, A6000)
@@ -58,6 +58,22 @@ docker compose --profile gpu up
 ```
 
 > **Note:** The first run downloads ~54 GB of model weights. The vLLM health check allows up to 10 minutes for the model to load.
+
+### Podman
+
+Both profiles work with Podman. For the `remote` profile, use the default compose file:
+
+```bash
+podman compose --profile remote up
+```
+
+For the `gpu` profile, use the Podman-specific compose file (uses CDI instead of Docker's `deploy.resources` for GPU passthrough):
+
+```bash
+podman compose -f docker-compose.podman.yml --profile gpu up
+```
+
+> Requires [NVIDIA Container Toolkit with CDI](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/cdi-support.html) configured for Podman.
 
 ---
 
