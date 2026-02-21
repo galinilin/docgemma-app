@@ -1,9 +1,5 @@
 # DocGemma
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/galinilin/docgemma-app/blob/main/docgemma_colab.ipynb)
-
-Run the full stack on a free Colab A100 GPU — just provide a HuggingFace token. The notebook deploys vLLM + DocGemma and generates a public URL.
-
 > **Source repositories:** [docgemma-connect](https://github.com/galinilin/docgemma-connect) (FastAPI backend) | [docgemma-frontend](https://github.com/galinilin/docgemma-frontend) (Vue 3 UI)
 >
 > **Competition:** [The MedGemma Impact Challenge](https://www.kaggle.com/competitions/med-gemma-impact-challenge) on Kaggle
@@ -11,6 +7,12 @@ Run the full stack on a free Colab A100 GPU — just provide a HuggingFace token
 Agentic medical AI assistant powered by MedGemma, with autonomous tool calling for clinical decision support. Designed for resource-limited healthcare environments. Compatible with [MedGemma 27B](https://huggingface.co/google/medgemma-27b-it) and [MedGemma 1.5 4B](https://huggingface.co/google/medgemma-1.5-4b-it).
 
 DocGemma combines a Vue 3 web interface with a FastAPI/LangGraph agent backend that can query drug safety databases, search medical literature, manage electronic health records, and analyze medical images — all with human-in-the-loop approval for safety-critical actions.
+
+## Live Demo
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/galinilin/docgemma-app/blob/main/docgemma_colab.ipynb)
+
+Try DocGemma instantly on Google Colab — no local setup required. The notebook provisions an A100 GPU, deploys the full stack (vLLM + backend + frontend), and generates a public URL. Just provide a [HuggingFace token](https://huggingface.co/settings/tokens) with MedGemma access.
 
 ## Prerequisites
 
