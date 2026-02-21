@@ -1,5 +1,7 @@
 # DocGemma
 
+> **Source repositories:** [docgemma-connect](https://github.com/galinilin/docgemma-connect) (FastAPI backend) | [docgemma-frontend](https://github.com/galinilin/docgemma-frontend) (Vue 3 UI)
+
 Agentic medical AI assistant powered by [MedGemma](https://huggingface.co/google/medgemma-27b-it), with autonomous tool calling for clinical decision support. Designed for resource-limited healthcare environments.
 
 DocGemma combines a Vue 3 web interface with a FastAPI/LangGraph agent backend that can query drug safety databases, search medical literature, manage electronic health records, and analyze medical images — all with human-in-the-loop approval for safety-critical actions.
@@ -147,6 +149,13 @@ Force a fresh build to pull latest source code:
 ```bash
 docker compose build --no-cache
 ```
+
+## Related Repositories
+
+| Repository | Description |
+|---|---|
+| [docgemma-connect](https://github.com/galinilin/docgemma-connect) | FastAPI backend with LangGraph agent, FHIR R4 EHR, and medical tool integrations |
+| [docgemma-frontend](https://github.com/galinilin/docgemma-frontend) | Vue 3 web interface with real-time chat, EHR management, and tool approval UI |
 
 ## Disclaimer
 
